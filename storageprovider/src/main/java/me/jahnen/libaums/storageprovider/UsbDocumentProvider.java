@@ -35,6 +35,8 @@ import android.util.Log;
 import android.util.LruCache;
 import android.webkit.MimeTypeMap;
 
+import androidx.core.content.ContextCompat;
+
 import me.jahnen.libaums.core.UsbMassStorageDevice;
 import me.jahnen.libaums.core.fs.FileSystem;
 import me.jahnen.libaums.core.fs.UsbFile;
@@ -49,7 +51,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-@TargetApi(Build.VERSION_CODES.KITKAT)
 public class UsbDocumentProvider extends DocumentsProvider {
 
     private static final String TAG = UsbDocumentProvider.class.getSimpleName();
@@ -280,30 +281,26 @@ public class UsbDocumentProvider extends DocumentsProvider {
         Context context = getContext();
         assert context != null;
 
-        context.registerReceiver(new BroadcastReceiver() {
-            public void onReceive(Context context, Intent intent) {
-                UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                    discoverDevice(device);
-                }
-            }
-        }, new IntentFilter(ACTION_USB_PERMISSION));
 
-        context.registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                discoverDevice(device);
-            }
-        }, new IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED));
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_USB_PERMISSION);
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
 
-        context.registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                detachDevice(device);
-            }
-        }, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
+       /* int flags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                ? Context.RECEIVER_EXPORTED : 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.registerReceiver(usbReceiver, filter, flags);
+        }*/
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // API 33+ must specify exported/not exported flag
+            context.registerReceiver(usbReceiver, filter, Context.RECEIVER_EXPORTED);
+        } else {
+            // API < 33 doesn't require flags
+            ContextCompat.registerReceiver(context, usbReceiver, filter, 0);
+        }
+        // Remove the two redundant registerReceiver(...) calls that were registering separate anonymous receivers.
 
         UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
         for (UsbDevice device : usbManager.getDeviceList().values()) {
@@ -312,6 +309,16 @@ public class UsbDocumentProvider extends DocumentsProvider {
 
         return true;
     }
+
+    BroadcastReceiver usbReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+            if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                discoverDevice(device);
+            }
+        }
+    };
 
     private static String getMimeType(UsbFile file) {
 
@@ -388,7 +395,7 @@ public class UsbDocumentProvider extends DocumentsProvider {
                     addRoot(massStorageDevice);
                 } else {
                     PendingIntent permissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(
-                            ACTION_USB_PERMISSION), 0);
+                            ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE);
                     usbManager.requestPermission(device, permissionIntent);
                 }
             }

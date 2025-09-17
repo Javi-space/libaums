@@ -116,13 +116,13 @@ private constructor(blockDevice: BlockDeviceDriver, first512Bytes: ByteBuffer) :
             buffer.flip()
 
             return if (buffer.get(82).toChar() != 'F' ||
-                    buffer.get(83).toChar() != 'A' ||
-                    buffer.get(84).toChar() != 'T' ||
-                    buffer.get(85).toChar() != '3' ||
-                    buffer.get(86).toChar() != '2' ||
-                    buffer.get(87).toChar() != ' ' ||
-                    buffer.get(88).toChar() != ' ' ||
-                    buffer.get(89).toChar() != ' ') {
+                buffer.get(83).toChar() != 'A' ||
+                buffer.get(84).toChar() != 'T' ||
+                buffer.get(85).toChar() != '3' ||
+                buffer.get(86).toChar() != '2' ||
+                buffer.get(87).toChar() != ' ' ||
+                buffer.get(88).toChar() != ' ' ||
+                buffer.get(89).toChar() != ' ') {
                 null
             } else Fat32FileSystem(blockDevice, buffer)
 

@@ -16,6 +16,7 @@
  */
 package me.jahnen.libaums.core.usbfileman
 
+//import me.jahnen.libaums.libusbcommunication.LibusbCommunicationCreator
 import android.Manifest
 import android.app.*
 import android.content.*
@@ -39,7 +40,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
 import androidx.drawerlayout.widget.DrawerLayout
-import me.jahnen.libaums.javafs.JavaFsFileSystemCreator
 import me.jahnen.libaums.core.UsbMassStorageDevice
 import me.jahnen.libaums.core.UsbMassStorageDevice.Companion.getMassStorageDevices
 import me.jahnen.libaums.core.fs.FileSystem
@@ -47,13 +47,12 @@ import me.jahnen.libaums.core.fs.FileSystemFactory.registerFileSystem
 import me.jahnen.libaums.core.fs.UsbFile
 import me.jahnen.libaums.core.fs.UsbFileInputStream
 import me.jahnen.libaums.core.fs.UsbFileStreamFactory.createBufferedOutputStream
+import me.jahnen.libaums.core.usb.UsbCommunicationFactory
+import me.jahnen.libaums.core.usb.UsbCommunicationFactory.underlyingUsbCommunication
+import me.jahnen.libaums.javafs.JavaFsFileSystemCreator
 import me.jahnen.libaums.server.http.UsbFileHttpServerService
 import me.jahnen.libaums.server.http.UsbFileHttpServerService.ServiceBinder
 import me.jahnen.libaums.server.http.server.AsyncHttpServer
-import me.jahnen.libaums.core.usb.UsbCommunicationFactory
-import me.jahnen.libaums.core.usb.UsbCommunicationFactory.registerCommunication
-import me.jahnen.libaums.core.usb.UsbCommunicationFactory.underlyingUsbCommunication
-import me.jahnen.libaums.libusbcommunication.LibusbCommunicationCreator
 import java.io.*
 import java.nio.ByteBuffer
 import java.util.*
@@ -78,7 +77,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
         init {
             registerFileSystem(JavaFsFileSystemCreator())
-            registerCommunication(LibusbCommunicationCreator())
+//            registerCommunication(LibusbCommunicationCreator())
             underlyingUsbCommunication = UsbCommunicationFactory.UnderlyingUsbCommunication.OTHER
         }
     }
@@ -551,7 +550,28 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         val filter = IntentFilter(ACTION_USB_PERMISSION)
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
-        registerReceiver(usbReceiver, filter)
+
+//        val filter = IntentFilter().apply {
+//            addAction(ACTION_USB_PERMISSION)
+//            addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
+//            addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
+//        }
+
+        /* int flags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                ? Context.RECEIVER_EXPORTED : 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.registerReceiver(usbReceiver, filter, flags);
+        }*/
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // API 33+ must specify exported/not exported flag
+            registerReceiver(usbReceiver, filter, RECEIVER_EXPORTED)
+        } else {
+            // API < 33 doesn't require flags
+            ContextCompat.registerReceiver(this, usbReceiver, filter, 0)
+        }
+
+//        registerReceiver(usbReceiver, filter)
+
         discoverDevice()
     }
 
@@ -596,7 +616,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         } else {
             // first request permission from user to communicate with the underlying UsbDevice
             val permissionIntent = PendingIntent.getBroadcast(this, 0, Intent(
-                    ACTION_USB_PERMISSION), 0)
+                    ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE)
             usbManager.requestPermission(massStorageDevices[currentDevice].usbDevice, permissionIntent)
         }
     }
@@ -833,6 +853,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             REQUEST_EXT_STORAGE_WRITE_PERM -> {
                 // If request is cancelled, the result arrays are empty.

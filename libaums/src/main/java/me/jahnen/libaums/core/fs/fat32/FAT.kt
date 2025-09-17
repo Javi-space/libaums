@@ -54,7 +54,7 @@ class FAT
  * clusters are saved.
  */
 internal constructor(private val blockDevice: BlockDeviceDriver, bootSector: Fat32BootSector,
-                                   private val fsInfoStructure: FsInfoStructure) {
+                     private val fsInfoStructure: FsInfoStructure) {
     private val fatOffset: LongArray
     private var fatNumbers: IntArray
     private val cache = LRUCache<Long, Array<Long>>(64)

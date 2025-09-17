@@ -29,10 +29,12 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 33
-        compileSdk 33
-
+//        minSdkVersion 23
+//        targetSdkVersion 33
+//        compileSdk 33
+        minSdk = 23
+        targetSdk = 35
+        compileSdk 36
         externalNativeBuild {
             cmake {
                 abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64'

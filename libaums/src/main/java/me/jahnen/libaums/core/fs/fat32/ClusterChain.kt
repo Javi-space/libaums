@@ -92,7 +92,7 @@ internal constructor(startCluster: Long, private val blockDevice: BlockDeviceDri
      * @see .getLength
      * @see .setClusters
      */
-     internal var length: Long
+    internal var length: Long
         get() = chain.size * clusterSize
         @Throws(IOException::class)
         set(newLength) {
@@ -121,7 +121,7 @@ internal constructor(startCluster: Long, private val blockDevice: BlockDeviceDri
      * @throws IOException
      * If reading fails.
      */
-     @Throws(IOException::class)
+    @Throws(IOException::class)
     internal fun read(offset: Long, dest: ByteBuffer) {
         var length = dest.remaining()
 
@@ -171,7 +171,7 @@ internal constructor(startCluster: Long, private val blockDevice: BlockDeviceDri
      * @throws IOException
      * If writing fails.
      */
-     @Throws(IOException::class)
+    @Throws(IOException::class)
     internal fun write(offset: Long, source: ByteBuffer) {
         var length = source.remaining()
 

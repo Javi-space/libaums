@@ -12,9 +12,12 @@ android {
     }
     defaultConfig {
         applicationId "com.github.mjdev.usbfileman"
-        minSdkVersion 16
+        minSdk = 23
+        targetSdk = 35
+        compileSdk 36
+        /*minSdkVersion 23
         targetSdkVersion 33
-        compileSdk 33
+        compileSdk 33*/
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -41,5 +44,5 @@ dependencies {
     api project(':httpserver')
     api project(':storageprovider')
     api project(':javafs')
-    api project(':libusbcommunication')
+//    api project(':libusbcommunication')
 }
