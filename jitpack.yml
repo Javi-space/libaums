@@ -1,0 +1,7 @@
+jitpack:
+  # Only build the 'libaums' (core) module and ignore the rest
+  build:
+    - ./gradlew :libaums:assemble
+  # Use Java 11 for better compatibility
+  jdk:
+    - openjdk11
