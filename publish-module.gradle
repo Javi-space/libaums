@@ -32,7 +32,7 @@ artifacts {
 }
 
 group = 'com.github.Javi-space'
-version = "0.10.0-wasbb"
+version = "0.10.0-wasp"
 
 
 afterEvaluate {
@@ -47,9 +47,9 @@ afterEvaluate {
 //                version PUBLISH_VERSION
 
 //                groupId = 'com.github.Javi-space'
-                artifactId = 'libaums'
-                artifactId PUBLISH_ARTIFACT_ID
-                version = "0.10.0-wasbb"
+                artifactId = 'libaums:core'
+//                artifactId PUBLISH_ARTIFACT_ID
+                version = "0.10.0-wasp"
 
                 // Two artifacts, the `aar` (or `jar`) and the sources
                 if (project.plugins.findPlugin("com.android.library")) {
@@ -64,7 +64,7 @@ afterEvaluate {
               // Mostly self-explanatory metadata
               pom {
 //                    name = PUBLISH_ARTIFACT_ID
-                  name = 'libaums'
+                  name = 'libaums:core'
                     description = 'Android USB mass storage library with FAT32 support.'
                     url = 'https://github.com/Javi-space/libaums'
                   licenses {

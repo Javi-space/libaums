@@ -72,8 +72,8 @@ android {
             path "CMakeLists.txt"
         }
 
-//        ndkVersion '25.2.9519653'
-        ndkVersion '28.0.12433566 rc1'
+        ndkVersion '25.2.9519653'
+//        ndkVersion '28.0.12433566 rc1'
     }
     lint {
         abortOnError false
