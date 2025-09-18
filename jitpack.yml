@@ -1,5 +1,9 @@
-jitpack:
-  build:
-    - ./gradlew :libaums:assembleRelease --offline --no-daemon
-  jdk:
-    - openjdk11
+jdk:
+  - openjdk21
+
+before_install:
+  - echo "JitPack build starting"
+
+# Only build the library modules you need for JitPack artifacts
+install:
+  - ./gradlew :libaums:assembleRelease :httpserver:assembleRelease :storageprovider:assembleRelease :javafs:assembleRelease -x test --no-daemon --stacktrace

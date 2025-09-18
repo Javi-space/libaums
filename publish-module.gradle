@@ -2,6 +2,12 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'org.jetbrains.dokka'
 
+// Skip publishing/signing when running on JitPack
+if (System.getenv("JITPACK") == "true") {
+    logger.lifecycle("Running on JitPack – skipping signing/publishing tasks")
+    return
+}
+
 tasks.register('androidSourcesJar', Jar) {
     archiveClassifier.set('sources')
     if (project.plugins.findPlugin("com.android.library")) {
@@ -32,7 +38,7 @@ artifacts {
 }
 
 group = 'com.github.Javi-space'
-version = "0.10.0-wasp"
+version = "0.10.0-waspp"
 
 
 afterEvaluate {
@@ -47,9 +53,9 @@ afterEvaluate {
 //                version PUBLISH_VERSION
 
 //                groupId = 'com.github.Javi-space'
-                artifactId = 'libaums:core'
+                artifactId = 'libaums'
 //                artifactId PUBLISH_ARTIFACT_ID
-                version = "0.10.0-wasp"
+                version = "0.10.0-waspp"
 
                 // Two artifacts, the `aar` (or `jar`) and the sources
                 if (project.plugins.findPlugin("com.android.library")) {
@@ -64,7 +70,7 @@ afterEvaluate {
               // Mostly self-explanatory metadata
               pom {
 //                    name = PUBLISH_ARTIFACT_ID
-                  name = 'libaums:core'
+                  name = 'libaums'
                     description = 'Android USB mass storage library with FAT32 support.'
                     url = 'https://github.com/Javi-space/libaums'
                   licenses {
