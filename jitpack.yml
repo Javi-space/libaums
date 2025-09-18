@@ -1,7 +1,5 @@
 jitpack:
-  # Only build the 'libaums' (core) module and ignore the rest
   build:
-    - ./gradlew :libaums:assemble --offline
-  # Use Java 11 for better compatibility
+    - ./gradlew :libaums:assembleRelease --offline --no-daemon
   jdk:
     - openjdk11
