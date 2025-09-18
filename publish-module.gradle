@@ -32,7 +32,11 @@ artifacts {
 }
 
 group = 'com.github.Javi-space'
-version = "0.10.0-wasii"
+version = "0.10.0-wasiii"
+
+tasks.named('generateMetadataFileForReleasePublication') {
+    dependsOn('androidSourcesJar')
+}
 
 afterEvaluate {
     publishing {
@@ -47,7 +51,7 @@ afterEvaluate {
 
                 groupId = 'com.github.Javi-space'
                 artifactId = 'libaums'
-                version = "0.10.0-wasii"
+                version = "0.10.0-wasiii"
 
                 // Two artifacts, the `aar` (or `jar`) and the sources
                 if (project.plugins.findPlugin("com.android.library")) {
