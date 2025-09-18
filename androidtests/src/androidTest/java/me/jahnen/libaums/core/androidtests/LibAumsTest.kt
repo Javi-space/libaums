@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.usb.UsbManager
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.test.InstrumentationRegistry
 import androidx.test.filters.LargeTest
 import me.jahnen.libaums.javafs.JavaFsFileSystemCreator
@@ -18,7 +19,7 @@ import me.jahnen.libaums.core.fs.UsbFile
 import me.jahnen.libaums.core.usb.UsbCommunicationFactory
 import junit.framework.Assert
 import junit.framework.TestCase
-import me.jahnen.libaums.libusbcommunication.LibusbCommunicationCreator
+//import me.jahnen.libaums.libusbcommunication.LibusbCommunicationCreator
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -52,7 +53,7 @@ open class LibAumsTest(
     companion object {
         init {
             FileSystemFactory.registerFileSystem(JavaFsFileSystemCreator())
-            UsbCommunicationFactory.registerCommunication(LibusbCommunicationCreator())
+//            UsbCommunicationFactory.registerCommunication(LibusbCommunicationCreator())
         }
 
         @JvmStatic
@@ -83,7 +84,12 @@ open class LibAumsTest(
                 addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
                 addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
             }
-            context.registerReceiver(noopBroadcastReceiver, filter)
+            ContextCompat.registerReceiver(
+                context,
+                noopBroadcastReceiver,
+                filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
 
             discoverDevice()
             setupDevice()

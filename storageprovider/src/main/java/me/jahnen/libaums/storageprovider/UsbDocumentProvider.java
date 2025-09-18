@@ -296,9 +296,12 @@ public class UsbDocumentProvider extends DocumentsProvider {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             // API 33+ must specify exported/not exported flag
             context.registerReceiver(usbReceiver, filter, Context.RECEIVER_EXPORTED);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // API 26-32: Use ContextCompat with null permission
+            ContextCompat.registerReceiver(context, usbReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
         } else {
-            // API < 33 doesn't require flags
-            ContextCompat.registerReceiver(context, usbReceiver, filter, 0);
+            // API 23-25: Use ContextCompat with null permission and no flags
+            ContextCompat.registerReceiver(context, usbReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
         }
         // Remove the two redundant registerReceiver(...) calls that were registering separate anonymous receivers.
 

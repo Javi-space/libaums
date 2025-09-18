@@ -2,7 +2,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'org.jetbrains.dokka'
 
-task androidSourcesJar(type: Jar) {
+tasks.register('androidSourcesJar', Jar) {
     archiveClassifier.set('sources')
     if (project.plugins.findPlugin("com.android.library")) {
         // For Android libraries
@@ -21,7 +21,8 @@ tasks.withType(dokkaHtmlPartial.getClass()).configureEach {
     )
 }
 
-task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+tasks.register('javadocJar', Jar) {
+    dependsOn dokkaJavadoc
     archiveClassifier.set('javadoc')
     from dokkaJavadoc.outputDirectory
 }
@@ -30,18 +31,23 @@ artifacts {
     archives androidSourcesJar
 }
 
-group = PUBLISH_GROUP_ID
-version = PUBLISH_VERSION
+group = 'com.github.Javi-space'
+version = "0.10.0-wasi"
 
 afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
+//                from components.release
                 // The coordinates of the library, being set from variables that
                 // we'll set up later
-                groupId PUBLISH_GROUP_ID
-                artifactId PUBLISH_ARTIFACT_ID
-                version PUBLISH_VERSION
+//                groupId PUBLISH_GROUP_ID
+//                artifactId PUBLISH_ARTIFACT_ID
+//                version PUBLISH_VERSION
+
+                groupId = 'com.github.Javi-space'
+                artifactId = 'libaums'
+                version ="0.10.0-wasi"
 
                 // Two artifacts, the `aar` (or `jar`) and the sources
                 if (project.plugins.findPlugin("com.android.library")) {
@@ -55,10 +61,11 @@ afterEvaluate {
 
               // Mostly self-explanatory metadata
               pom {
-                    name = PUBLISH_ARTIFACT_ID
+//                    name = PUBLISH_ARTIFACT_ID
+                  name = 'libaums'
                     description = 'Android USB mass storage library with FAT32 support.'
-                    url = 'https://github.com/magnusja/libaums'
-                    licenses {
+                    url = 'https://github.com/Javi-space/libaums'
+                  licenses {
                         license {
                             name = 'The Apache Software License, Version 2.0'
                             url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
@@ -75,15 +82,20 @@ afterEvaluate {
                           name = 'Davide Depau'
                           email = 'davide@depau.eu'
                         }
+                        developer {
+                            id = 'Javi-space'
+                            name = 'Javi-space'
+                            email = 'technologiescontrol@gmail.com'
+                        }
                         // TODO add all the others
                     }
 
                 // Version control info - if you're using GitHub, follow the
                 // format as seen here
                 scm {
-                        connection = 'scm:git:github.com/magnusja/libaums.git'
-                        developerConnection = 'scm:git:ssh://github.com/magnusja/libaums.git'
-                        url = 'https://github.com/magnusja/libaums/tree/main'
+                        connection = 'https://github.com/Javi-space/libaums.git'
+                        developerConnection = 'https://github.com/Javi-space/libaums.git'
+                        url = 'https://github.com/Javi-space/libaums'
                     }
                 }
             }
@@ -91,10 +103,10 @@ afterEvaluate {
     }
 }
 
-signing {
-    useInMemoryPgpKeys(
-            rootProject.ext["signing.key"],
-            rootProject.ext["signing.password"],
-    )
-    sign publishing.publications
-}
+//signing {
+//    useInMemoryPgpKeys(
+//            rootProject.ext["signing.key"],
+//            rootProject.ext["signing.password"],
+//    )
+//    sign publishing.publications
+//}

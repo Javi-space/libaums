@@ -566,8 +566,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             // API 33+ must specify exported/not exported flag
             registerReceiver(usbReceiver, filter, RECEIVER_EXPORTED)
         } else {
-            // API < 33 doesn't require flags
-            ContextCompat.registerReceiver(this, usbReceiver, filter, 0)
+            // API 23-25: Use ContextCompat with null permission and no flags
+            ContextCompat.registerReceiver(this, usbReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
         }
 
 //        registerReceiver(usbReceiver, filter)
