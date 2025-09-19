@@ -1,2 +1,2 @@
-include(":app", ":libaums", ":httpserver", ":storageprovider", ":javafs")
+include(":app", ":libaums", ":storageprovider"/*, ":httpserver",  ":javafs"*/)
 /*, *//*":libusbcommunication",*//* ":androidtests")*/

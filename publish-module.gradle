@@ -38,7 +38,7 @@ artifacts {
 }
 
 group = 'com.github.Javi-space'
-version = "0.10.0-waspp"
+version = "0.10.0-pwas"
 
 
 afterEvaluate {
@@ -55,7 +55,7 @@ afterEvaluate {
 //                groupId = 'com.github.Javi-space'
                 artifactId = 'libaums'
 //                artifactId PUBLISH_ARTIFACT_ID
-                version = "0.10.0-waspp"
+                version = "0.10.0-pwas"
 
                 // Two artifacts, the `aar` (or `jar`) and the sources
                 if (project.plugins.findPlugin("com.android.library")) {

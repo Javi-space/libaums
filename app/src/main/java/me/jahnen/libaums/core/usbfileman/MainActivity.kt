@@ -49,10 +49,10 @@ import me.jahnen.libaums.core.fs.UsbFileInputStream
 import me.jahnen.libaums.core.fs.UsbFileStreamFactory.createBufferedOutputStream
 import me.jahnen.libaums.core.usb.UsbCommunicationFactory
 import me.jahnen.libaums.core.usb.UsbCommunicationFactory.underlyingUsbCommunication
-import me.jahnen.libaums.javafs.JavaFsFileSystemCreator
-import me.jahnen.libaums.server.http.UsbFileHttpServerService
-import me.jahnen.libaums.server.http.UsbFileHttpServerService.ServiceBinder
-import me.jahnen.libaums.server.http.server.AsyncHttpServer
+//import me.jahnen.libaums.javafs.JavaFsFileSystemCreator
+//import me.jahnen.libaums.server.http.UsbFileHttpServerService
+//import me.jahnen.libaums.server.http.UsbFileHttpServerService.ServiceBinder
+//import me.jahnen.libaums.server.http.server.AsyncHttpServer
 import java.io.*
 import java.nio.ByteBuffer
 import java.util.*
@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         private const val REQUEST_EXT_STORAGE_WRITE_PERM = 0
 
         init {
-            registerFileSystem(JavaFsFileSystemCreator())
+//            registerFileSystem(JavaFsFileSystemCreator())
 //            registerCommunication(LibusbCommunicationCreator())
             underlyingUsbCommunication = UsbCommunicationFactory.UnderlyingUsbCommunication.OTHER
         }
@@ -488,13 +488,13 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     private var serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             Log.d(TAG, "on service connected $name")
-            val binder = service as ServiceBinder
-            serverService = binder.service
+//            val binder = service as ServiceBinder
+//            serverService = binder.service
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
             Log.d(TAG, "on service disconnected $name")
-            serverService = null
+//            serverService = null
         }
     }
     lateinit var listView: ListView
@@ -506,14 +506,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     lateinit var adapter: UsbFileListAdapter
     private val dirs: Deque<UsbFile> = ArrayDeque()
     lateinit var currentFs: FileSystem
-    lateinit var serviceIntent: Intent
-    var serverService: UsbFileHttpServerService? = null
+//    lateinit var serviceIntent: Intent
+//    var serverService: UsbFileHttpServerService? = null
     lateinit var massStorageDevices: Array<UsbMassStorageDevice>
     private var currentDevice = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        serviceIntent = Intent(this, UsbFileHttpServerService::class.java)
+//        serviceIntent = Intent(this, UsbFileHttpServerService::class.java)
         setContentView(R.layout.activity_main)
         listView = findViewById<View>(R.id.listview) as ListView
         drawerListView = findViewById<View>(R.id.left_drawer) as ListView
@@ -577,8 +577,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
     override fun onStart() {
         super.onStart()
-        startService(serviceIntent)
-        bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE)
+//        startService(serviceIntent)
+//        bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE)
     }
 
     override fun onStop() {
@@ -655,7 +655,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         val cl = MoveClipboard
         menu.findItem(R.id.paste).isEnabled = cl?.file != null
-        menu.findItem(R.id.stop_http_server).isEnabled = serverService != null && serverService!!.isServerRunning
+//        menu.findItem(R.id.stop_http_server).isEnabled = serverService != null && serverService!!.isServerRunning
         return true
     }
 
@@ -680,9 +680,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 true
             }
             R.id.stop_http_server -> {
-                if (serverService != null) {
-                    serverService!!.stopServer()
-                }
+//                if (serverService != null) {
+//                    serverService!!.stopServer()
+//                }
                 true
             }
             R.id.open_storage_provider -> {
@@ -821,18 +821,18 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
     private fun startHttpServer(file: UsbFile?) {
         Log.d(TAG, "starting HTTP server")
-        if (serverService == null) {
-            Toast.makeText(this@MainActivity, "serverService == null!", Toast.LENGTH_LONG).show()
-            return
-        }
-        if (serverService!!.isServerRunning) {
-            Log.d(TAG, "Stopping existing server service")
-            serverService!!.stopServer()
-        }
+//        if (serverService == null) {
+//            Toast.makeText(this@MainActivity, "serverService == null!", Toast.LENGTH_LONG).show()
+//            return
+//        }
+//        if (serverService!!.isServerRunning) {
+//            Log.d(TAG, "Stopping existing server service")
+//            serverService!!.stopServer()
+//        }
 
         // now start the server
         try {
-            serverService!!.startServer(file!!, AsyncHttpServer(8000))
+//            serverService!!.startServer(file!!, AsyncHttpServer(8000))
             Toast.makeText(this@MainActivity, "HTTP server up and running", Toast.LENGTH_LONG).show()
         } catch (e: IOException) {
             Log.e(TAG, "Error starting HTTP server", e)
@@ -843,7 +843,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             return
         }
         val myIntent = Intent(Intent.ACTION_VIEW)
-        myIntent.data = Uri.parse(serverService!!.server!!.baseUrl + file.name)
+//        myIntent.data = Uri.parse(serverService!!.server!!.baseUrl + file.name)
         try {
             startActivity(myIntent)
         } catch (e: ActivityNotFoundException) {
@@ -947,13 +947,13 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     public override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(usbReceiver)
-        if (!serverService!!.isServerRunning) {
-            Log.d(TAG, "Stopping service")
-            stopService(serviceIntent)
-            if (currentDevice != -1) {
-                Log.d(TAG, "Closing device")
-                massStorageDevices[currentDevice].close()
-            }
-        }
+//        if (!serverService!!.isServerRunning) {
+//            Log.d(TAG, "Stopping service")
+//            stopService(serviceIntent)
+//            if (currentDevice != -1) {
+//                Log.d(TAG, "Closing device")
+//                massStorageDevices[currentDevice].close()
+//            }
+//        }
     }
 }

@@ -6,4 +6,4 @@ before_install:
 
 # Only build the library modules you need for JitPack artifacts
 install:
-  - ./gradlew :libaums:assembleRelease :httpserver:assembleRelease :storageprovider:assembleRelease :javafs:assembleRelease -x test --no-daemon --stacktrace
+ - ./gradlew clean assemble
