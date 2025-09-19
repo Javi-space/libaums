@@ -26,13 +26,13 @@ tasks.register('javadocJar', Jar) {
     from dokkaJavadoc.outputDirectory
 }
 
-artifacts {
-    // still add to archives for legacy tasks
-    archives tasks.named("androidSourcesJar").get()
-}
+//artifacts {
+//    // still add to archives for legacy tasks
+//    archives tasks.named("androidSourcesJar").get()
+//}
 
 group = 'com.github.Javi-space'
-version = "0.10.0-ewas"
+version = "0.10.0-mwasi"
 
 // ---- Publishing setup ----
 afterEvaluate {
@@ -47,7 +47,7 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 artifactId = 'libaums'
-                version = "0.10.0-ewas"
+                version = "0.10.0-mwasi"
 
                 if (project.plugins.findPlugin("com.android.library")) {
                     from components.findByName("android") ?: components.findByName("release")
@@ -56,7 +56,7 @@ afterEvaluate {
                 }
 
                 // Use explicit TaskProviders to avoid Gradle 8 validation error
-                artifact tasks.named("androidSourcesJar").get()
+//                artifact tasks.named("androidSourcesJar").get()
                 artifact tasks.named("javadocJar").get()
 
                 pom {
