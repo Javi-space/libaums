@@ -1,4 +1,94 @@
 apply plugin: 'maven-publish'
+apply plugin: 'org.jetbrains.dokka'
+
+// Only run when NOT on JitPack
+if (System.getenv("JITPACK") == "true") {
+    logger.lifecycle("Running on JitPack – skipping signing tasks")
+} else {
+    apply plugin: 'signing'
+}
+
+tasks.register('androidSourcesJar', Jar) {
+    archiveClassifier.set('sources')
+    if (project.plugins.findPlugin("com.android.library")) {
+        from android.sourceSets.main.java.srcDirs
+        from android.sourceSets.main.kotlin.srcDirs
+    } else {
+        from sourceSets.main.java.srcDirs
+        from sourceSets.main.kotlin.srcDirs
+    }
+}
+
+tasks.register('javadocJar', Jar) {
+    dependsOn dokkaJavadoc
+    archiveClassifier.set('javadoc')
+    from dokkaJavadoc.outputDirectory
+}
+
+artifacts {
+    archives androidSourcesJar
+}
+
+group = 'com.github.Javi-space'
+version = "0.10.0-ppwas"
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                artifactId = 'libaums'
+                version = "0.10.0-ppwas"
+
+                if (project.plugins.findPlugin("com.android.library")) {
+                    from components.findByName("android") ?: components.findByName("release")
+                } else {
+                    from components.java
+                }
+
+                artifact androidSourcesJar
+                artifact javadocJar
+
+                pom {
+                    name = 'libaums'
+                    description = 'Android USB mass storage library with FAT32 support.'
+                    url = 'https://github.com/Javi-space/libaums'
+                    licenses {
+                        license {
+                            name = 'The Apache Software License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'Javi-space'
+                            name = 'Javi-space'
+                            email = 'technologiescontrol@gmail.com'
+                        }
+                        developer {
+                            id = 'magnusja'
+                            name = 'Magnus Jahnen'
+                            email = 'github@mgns.tech'
+                        }
+                        developer {
+                            id = 'depau'
+                            name = 'Davide Depau'
+                            email = 'davide@depau.eu'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:https://github.com/Javi-space/libaums.git'
+                        developerConnection = 'scm:git:https://github.com/Javi-space/libaums.git'
+                        url = 'https://github.com/Javi-space/libaums'
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+/*
+apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'org.jetbrains.dokka'
 
@@ -121,4 +211,4 @@ afterEvaluate {
 //            rootProject.ext["signing.password"],
 //    )
 //    sign publishing.publications
-//}
+//}*/

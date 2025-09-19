@@ -4,6 +4,6 @@ jdk:
 before_install:
   - echo "JitPack build starting"
 
-# Only build the library modules you need for JitPack artifacts
+# Build & publish only libaums module to local maven repo
 install:
- - ./gradlew clean assemble
+  - ./gradlew :libaums:publishReleasePublicationToMavenLocal -x test --no-daemon --stacktrace

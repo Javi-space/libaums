@@ -583,7 +583,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
     override fun onStop() {
         super.onStop()
-        unbindService(serviceConnection)
+//        unbindService(serviceConnection)
     }
 
     private fun selectDevice(position: Int) {
