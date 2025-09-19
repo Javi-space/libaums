@@ -1,13 +1,14 @@
 apply plugin: 'maven-publish'
 apply plugin: 'org.jetbrains.dokka'
 
-// Only run when NOT on JitPack
+// Only run signing when NOT on JitPack
 if (System.getenv("JITPACK") == "true") {
     logger.lifecycle("Running on JitPack – skipping signing tasks")
 } else {
     apply plugin: 'signing'
 }
 
+// ---- Tasks for sources and javadoc jars ----
 tasks.register('androidSourcesJar', Jar) {
     archiveClassifier.set('sources')
     if (project.plugins.findPlugin("com.android.library")) {
@@ -26,18 +27,27 @@ tasks.register('javadocJar', Jar) {
 }
 
 artifacts {
-    archives androidSourcesJar
+    // still add to archives for legacy tasks
+    archives tasks.named("androidSourcesJar").get()
 }
 
 group = 'com.github.Javi-space'
-version = "0.10.0-ppwas"
+version = "0.10.0-ewas"
 
+// ---- Publishing setup ----
 afterEvaluate {
+
+    // Ensure Gradle knows about task dependencies for metadata generation
+    tasks.matching { it.name.startsWith("generateMetadataFileFor") }.configureEach {
+        dependsOn(tasks.named("androidSourcesJar"))
+        dependsOn(tasks.named("javadocJar"))
+    }
+
     publishing {
         publications {
             release(MavenPublication) {
                 artifactId = 'libaums'
-                version = "0.10.0-ppwas"
+                version = "0.10.0-ewas"
 
                 if (project.plugins.findPlugin("com.android.library")) {
                     from components.findByName("android") ?: components.findByName("release")
@@ -45,19 +55,22 @@ afterEvaluate {
                     from components.java
                 }
 
-                artifact androidSourcesJar
-                artifact javadocJar
+                // Use explicit TaskProviders to avoid Gradle 8 validation error
+                artifact tasks.named("androidSourcesJar").get()
+                artifact tasks.named("javadocJar").get()
 
                 pom {
                     name = 'libaums'
                     description = 'Android USB mass storage library with FAT32 support.'
                     url = 'https://github.com/Javi-space/libaums'
+
                     licenses {
                         license {
                             name = 'The Apache Software License, Version 2.0'
                             url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                         }
                     }
+
                     developers {
                         developer {
                             id = 'Javi-space'
@@ -75,6 +88,7 @@ afterEvaluate {
                             email = 'davide@depau.eu'
                         }
                     }
+
                     scm {
                         connection = 'scm:git:https://github.com/Javi-space/libaums.git'
                         developerConnection = 'scm:git:https://github.com/Javi-space/libaums.git'
